@@ -32,33 +32,122 @@ def registrar_usuario(request):
     - email: string (obrigatório)
     
     retorno:
-    - mensagem: string - mensagem de erro ou sucesso de registro
+    - mensagem: string - mensagem de sucesso de registro
+    - erro: string - mensagem de erro de registro
     """
-    # pega os dados passados no JSON da requisição
     nome = request.data.get('nome')
     senha = request.data.get('senha')
     confirmacao_senha = request.data.get('confirmacaoSenha')
     email = request.data.get('email')
 
-    # verifica se os dados passados pelo usuário são válidos
     if not nome or not senha:
-        return Response({'mensagem': 'Nome e senha são obrigatórios.'}, status=400)
+        return Response({'erro': 'Nome e senha são obrigatórios.'}, status=400)
     
     if senha != confirmacao_senha:
-        return Response({'mensagem': 'Senha e confirmação da senha devem ser iguais'}, status=400)
+        return Response({'erro': 'Senha e confirmação da senha devem ser iguais'}, status=400)
 
-    # tenta fazer o registro e login do usuário
     try:
         user = User.objects.create_user(username=nome, password=senha, email=email)
         login(request, user)
         return Response({'messagem': 'Usuário criado com sucesso.'}, status=201)
     except Exception as e:
-        return Response({'mensagem': str(e)}, status=401)
+        return Response({'erro': str(e)}, status=401)
+    
+
+@csrf_exempt
+@api_view(['POST'])
+def login_usuario(request):
+    """
+    Faz login de um usuário
+    
+    campos:
+    - nome: string (obrigatório)
+    - senha: string (obrigatório)
+    
+    retorno:
+    - mensagem: string - mensagem de sucesso de login
+    - erro: string - mensagem de erro de login
+    """
+    nome = request.data.get('nome')
+    senha = request.data.get('senha')
+
+    usuario = authenticate(request, username=nome, password=senha)
+
+    if usuario is not None:
+        login(request, usuario)
+        return Response({'messagem': 'Login realizado com sucesso.'}, status=201)
+    else:
+        return Response({'erro': 'Nome e/ou senha incorreto(s)'}, status=401)
+    
+
+@csrf_exempt
+# faz com que essa rota apenas pode ser acessada por usuários que realizaram login
+@login_required
+@api_view(['GET'])
+def logout_usuario(request):
+    """
+    Faz logout do usuário atual
+
+    retorno:
+    - mensagem: string - mensagem de sucesso de logout
+    """
+    logout(request)
+    return Response({'messagem': 'Logout realizado com sucesso.'}, status=201)
 
 
 @csrf_exempt
+@login_required
+@api_view(['PATCH'])
+def editar_usuario(request):
+    """
+    Edita os dados de cadastro do usuário atual
+    
+    campos:
+    - novoNome: string (opcional)
+    - novaSenha: string (opcional)
+    - novoEmail: string (opcional)
+    
+    retorno:
+    - mensagem: string - mensagem de sucesso de edição
+    - usuario: json - novos dados de cadastro do usuário
+    """
+    usuario = request.user
+    novo_nome = request.data.get('novoNome')
+    nova_senha = request.data.get('novaSenha')
+    novo_email = request.data.get('novoEmail')
+    
+    if novo_nome:
+        usuario.username = novo_nome
+    if nova_senha:
+        usuario.password = nova_senha
+    if novo_email:
+        usuario.email = novo_email
+        
+    usuario.save()
+    
+    return Response({'mensagem': 'usuario editado com sucesso', 'usuario': UserSerializer(usuario).data}, status=200)
+
+
+@csrf_exempt
+@login_required
+@api_view(['DELETE'])
+def deletar_usuario(request):
+    """
+    Deleta o usuário atual
+
+    retorno:
+    - mensagem: string - mensagem de sucesso de deleção
+    """
+    usuario = request.user
+    logout(request)
+    usuario.delete()
+    return Response({'mensagem': 'usuario deletado com sucesso'}, status=200)
+
+
+@csrf_exempt
+@login_required
 @api_view(['GET'])
-def perfil(request):
+def perfil_usuario(request):
     """
     Retorna todos os dados do usuário logado atualmente
     """

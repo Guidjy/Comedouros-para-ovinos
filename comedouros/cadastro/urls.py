@@ -5,6 +5,10 @@ from . import views
 # aqui definimos as rotas para nossas views
 urlpatterns = [
     path('', views.exemplo_rota_api),
-    path('registrar/', views.registrar_usuario),
-    path('perfil/', views.perfil),
+    path('registrar_usuario/', views.registrar_usuario),
+    path('login/', views.login_usuario),
+    path('logout/', views.logout_usuario),
+    path('editar_usuario/', views.editar_usuario),
+    path('deletar_usuario/', views.deletar_usuario),
+    path('perfil_usuario/', views.perfil_usuario),
 ]
