@@ -3,6 +3,10 @@ Backend do sistema de comedouros para ovinos
 
 ---
 
+DRS: https://docs.google.com/document/d/1C0blKDuB74-u4f4hb53yxRGq7Ejbn0UwOHmLEz7ay6k/edit?tab=t.0
+
+---
+
 ## API - Endpoints de Usuário
 
 ### POST /registrar_usuario
