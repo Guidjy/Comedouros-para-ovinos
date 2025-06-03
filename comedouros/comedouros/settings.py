@@ -34,6 +34,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     # apps que criamos
     'cadastro',
+    'ovinos',
     
     'django.contrib.admin',
     'django.contrib.auth',

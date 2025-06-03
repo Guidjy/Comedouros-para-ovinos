@@ -20,5 +20,6 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     # aqui definimos as rotas para nossos apps
-    path('', include('cadastro.urls')),
+    path('', include('ovinos.urls')),
+    path('cadastro/', include('cadastro.urls')),
 ]

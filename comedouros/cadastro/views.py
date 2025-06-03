@@ -10,16 +10,6 @@ from .serializers import UserSerializer
 # Aqui criamos nossas views (funções que são rodadas quando uma rota definida em urls.py é acessada)
 
 
-# faz com que essa view não requere autenticação csrf
-@csrf_exempt
-# define os métodos de requisição permitidos para essa view
-@api_view(['GET'])
-def exemplo_rota_api(request):
-    # Retorna um objeto Response que renderiza o dicionário que passamos como JSON
-    return Response({'mensagem': 'REST Framework funcionando!'})
-
-
-@csrf_exempt
 @api_view(['POST'])
 def registrar_usuario(request):
     """
@@ -54,7 +44,6 @@ def registrar_usuario(request):
         return Response({'erro': str(e)}, status=401)
     
 
-@csrf_exempt
 @api_view(['POST'])
 def login_usuario(request):
     """
@@ -80,7 +69,6 @@ def login_usuario(request):
         return Response({'erro': 'Nome e/ou senha incorreto(s)'}, status=401)
     
 
-@csrf_exempt
 # faz com que essa rota apenas pode ser acessada por usuários que realizaram login
 @login_required
 @api_view(['GET'])
@@ -95,7 +83,6 @@ def logout_usuario(request):
     return Response({'messagem': 'Logout realizado com sucesso.'}, status=201)
 
 
-@csrf_exempt
 @login_required
 @api_view(['PATCH'])
 def editar_usuario(request):
@@ -128,7 +115,6 @@ def editar_usuario(request):
     return Response({'mensagem': 'usuario editado com sucesso', 'usuario': UserSerializer(usuario).data}, status=200)
 
 
-@csrf_exempt
 @login_required
 @api_view(['DELETE'])
 def deletar_usuario(request):
@@ -144,7 +130,6 @@ def deletar_usuario(request):
     return Response({'mensagem': 'usuario deletado com sucesso'}, status=200)
 
 
-@csrf_exempt
 @login_required
 @api_view(['GET'])
 def perfil_usuario(request):
@@ -154,4 +139,5 @@ def perfil_usuario(request):
     usuario = request.user
     serializer = UserSerializer(usuario)
     return Response(serializer.data)
-    
+
+
